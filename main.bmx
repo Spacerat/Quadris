@@ -4,9 +4,16 @@ Import brl.glmax2d
 
 Import "game.bmx"
 
-Graphics 350, 500
+Apptitle="Joe's Bitris Clone"
 
-Local game:btGame = New btGame.Init(350, 500)
+'Graphics 270, 400
+
+Const GAMEHEIGHT:Int = 500
+
+Graphics btGame.GetWidthForHeight(GAMEHEIGHT), GAMEHEIGHT
+SetClsColor(255,255,255)
+Local game:btGame = New btGame.Init(GAMEHEIGHT)
+
 
 While Not AppTerminate()
 	Cls

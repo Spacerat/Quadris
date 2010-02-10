@@ -2,11 +2,12 @@
 SuperStrict
 
 Import joe.colour
+Import brl.random
 
 Type btGrid
 	
 	Global _effects:Int = 1
-
+	
 	Field _Grid:Int[,]
 	Field _w:Int
 	Field _h:Int
@@ -30,6 +31,114 @@ Type btGrid
 		Return Self
 	End Method
 	
+	Method Init3by3Piece:btGrid()
+		Init(3, 3)
+		
+		Local b:Int[][][]
+		b = [[ ..			'Three pronged pieces
+		[0, 1, 0],  ..
+		[1, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 1, 0],  ..
+		[0, 1, 1],  ..
+		[0, 1, 0] ], [ ..
+..
+		[0, 0, 0],  ..
+		[1, 1, 1],  ..
+		[0, 1, 0] ], [ ..
+..
+		[0, 1, 0],  ..
+		[1, 1, 0],  ..
+		[0, 1, 0] ], [ ..
+..
+		[0, 0, 0],  ..		'Straight lines
+		[1, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 1, 0],  ..
+		[0, 1, 0],  ..
+		[0, 1, 0] ], [ ..
+..
+		[0, 1, 0],  ..		'L pieces
+		[0, 1, 0],  ..
+		[0, 1, 1] ], [ ..
+..
+		[0, 0, 1],  ..
+		[1, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[1, 1, 0],  ..
+		[0, 1, 0],  ..
+		[0, 1, 0] ], [ ..
+..
+		[0, 0, 0],  ..
+		[1, 1, 1],  ..
+		[1, 0, 0] ], [ ..
+..
+		[0, 1, 0],  ..		'J pieces
+		[0, 1, 0],  ..
+		[1, 1, 0] ], [ ..
+..
+		[0, 0, 0],  ..
+		[1, 1, 1],  ..
+		[0, 0, 1] ], [ ..
+..
+		[0, 1, 1],  ..
+		[0, 1, 0],  ..
+		[0, 1, 0] ], [ ..
+..
+		[1, 0, 0],  ..
+		[1, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 0, 0],  ..		'.
+		[0, 1, 0],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 0, 0],  ..		'Small L pieces
+		[0, 1, 1],  ..
+		[0, 1, 0] ], [ ..
+..
+		[0, 1, 0],  ..
+		[0, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 1, 0],  ..
+		[1, 1, 0],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 0, 0],  ..
+		[1, 1, 0],  ..
+		[0, 1, 0] ], [ ..
+..
+		[0, 0, 0],  ..		'Two piece lines
+		[0, 1, 0],  ..
+		[0, 1, 0] ], [ ..
+..
+		[0, 0, 0],  ..		'Two piece lines
+		[0, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[1, 0, 0],  ..		'X
+		[1, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 1, 0],  ..		'+
+		[1, 1, 1],  ..
+		[0, 1, 0] ] ]
+
+
+		Local piece:Int = Rand(0, b.dimensions()[0] - 1)
+
+		For Local xx:Int = 0 To 2
+			For Local yy:Int = 0 To 2
+				_Grid[xx, yy] = b[piece][yy][xx]
+			Next
+		Next
+		
+		Return Self
+	End Method
 	
 	
 	Rem
@@ -55,6 +164,14 @@ Type btGrid
 		Next
 				
 	End Method
+	
+	Method EraseRect:Int(x:Int, y:Int, w:Int, h:Int)
+		For Local xx:Int = Max(0, x) Until Min(x + w, _w)
+			For Local yy:Int = Max(0, y) Until Min(y + h, _h)
+				_Grid[xx, yy] = 0
+			Next
+		Next
+	EndMethod
 
 	Rem
 	bbdoc: Fills a grid box
@@ -79,16 +196,60 @@ Type btGrid
 	returns: Score increase.
 	EndRem
 	Method UpdateGrid:Int()
-
+		For Local yy:Int = 0 Until _h
+			For Local xx:Int = 0 Until _w
+				
+			If CheckRect(xx, yy, 3, 3) = True
+				EraseRect(xx, yy, 3, 3)
+				Return 30
+			EndIf
+				
+			If CheckRect(xx, yy, 3, 2) = True
+				EraseRect(xx, yy, 3, 2)
+				Return 15
+			EndIf
+			
+			If CheckRect(xx, yy, 2, 3) = True
+				EraseRect(xx, yy, 2, 3)
+				Return 15
+			EndIf
+			
+			If CheckRect(xx, yy, 2, 2) = True
+				EraseRect(xx, yy, 2, 2)
+				Return 5
+			EndIf
+			
+			Next
+		Next
+		
 	EndMethod
+	
+	Method CheckRect:Int(x1:Int, y1:Int, w:Int, h:Int)
+		For Local xx:Int = x1 Until x1 + w
+			For Local yy:Int = y1 Until y1 + h
+				If GetGrid(xx, yy) <= 0 Return 0
+			Next
+		Next
+		Return 1
+	End Method
+	
+	Method GetGrid:Int(x:Int, y:Int)
+		If x < 0 Or x >= _w Or y < 0 Or y >= _h
+			Return - 1
+		Else
+			Return _Grid[x, y]
+		EndIf
+		
+	End Method
 	
 	Rem
 	bbdoc: Render the grid
 	EndRem
 	Method Render(x:Int, y:Int, width:Int, height:Int)
-		Local blockw:Float = width / GetWidth()
-		Local blockh:Float = height / GetHeight()
+		Local blockw:Int = width / GetWidth()
+		Local blockh:Int = height / GetHeight()
 		SetBlend(ALPHABLEND)
+		SetAlpha(1)
 		_colLines.Set()
 		DrawRect(x, y, width, height)
 		Local vpx:Int, vpy:Int, vpw:Int, vph:Int
@@ -114,7 +275,7 @@ Type btGrid
 				DrawRect(x + xx * blockw + 1, y + yy * blockh + 1, blockw - 2, blockh - 2)
 				
 				If (_effects)
-					TColour.White(0.6).Set()
+					TColour.White(0.4).Set()
 					DrawOval(x + xx * blockw - (blockw / 3.0), y + yy * blockh - (blockh / 2.0), blockw * (5.0 / 3.0), blockh)
 				EndIf
 			Next
