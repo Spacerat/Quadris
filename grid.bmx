@@ -121,9 +121,25 @@ Type btGrid
 		[0, 1, 1],  ..
 		[0, 0, 0] ], [ ..
 ..
-		[1, 0, 0],  ..		'X
-		[1, 1, 1],  ..
+		[0, 1, 1],  ..		'S
+		[1, 1, 0],  ..
 		[0, 0, 0] ], [ ..
+..
+		[0, 1, 0],  ..
+		[0, 1, 1],  ..
+		[0, 0, 1] ], [ ..
+..
+		[0, 1, 0],  ..		'Z
+		[1, 1, 0],  ..
+		[1, 0, 0] ], [ ..
+..
+		[1, 1, 0],  ..
+		[0, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[1, 0, 1],  ..		'X
+		[0, 1, 0],  ..
+		[1, 0, 1] ], [ ..
 ..
 		[0, 1, 0],  ..		'+
 		[1, 1, 1],  ..
@@ -249,12 +265,15 @@ Type btGrid
 	Method Render(x:Int, y:Int, width:Int, height:Int, superimpose:btGrid = Null, sx:Int = 0, sy:Int = 0)
 		Local blockw:Int = width / GetWidth()
 		Local blockh:Int = height / GetHeight()
+		Local vpx:Int, vpy:Int, vpw:Int, vph:Int 'Viewport
+		Local hx:Float, hy:Float				'Handle
+		
 		SetBlend(ALPHABLEND)
 		SetAlpha(1)
 		_colLines.Set()
 		DrawRect(x, y, blockw * GetWidth(), blockh * GetHeight())
-		Local vpx:Int, vpy:Int, vpw:Int, vph:Int
-		
+
+		GetOrigin(hx, hy)
 		If (_effects)
 			GetViewport(vpx, vpy, vpw, vph)
 		EndIf
@@ -283,8 +302,10 @@ Type btGrid
 				
 			'   DrawRect(x + xx * blockw + 1, y + yy * blockh + 1, blockw - 2, blockh - 2)
 
-				If (_effects) SetViewport(x + xx * blockw + 1, y + yy * blockh + 1, blockw - 2, blockh - 2)
-				
+				If (_effects)
+
+					SetViewport(x + xx * blockw + 1 + hx, y + yy * blockh + 1 + hy, blockw - 2, blockh - 2)
+				EndIf
 				DrawRect(x + xx * blockw + 1, y + yy * blockh + 1, blockw - 2, blockh - 2)
 				
 				If (_effects)
@@ -297,13 +318,15 @@ Type btGrid
 		If (_effects)
 			SetViewport(vpx, vpy, vpw, vph)
 		EndIf
-		
 
 	End Method
 	
 	Method TestPos(resultX:Int Var, resultY:Int Var, x:Float, y:Float, w:Float, h:Float, px:Int, py:Int)
-		px = px - x
-		py = py - y
+		Local hx:Float, hy:Float
+		GetOrigin(hx, hy)
+		px = px - x - hx
+		py = py - y - hy
+		
 		
 		IF KeyDown(KEY_J) DebugStop
 		
