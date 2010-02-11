@@ -8,6 +8,7 @@ Type btGame
 	Field _MainGrid:btGrid
 	Field _NextGrid:btGrid[3]
 
+	Field _xoffset:Int = 0, _yoffset:Int = 0
 	Field _w:Int, _h:Int
 	Global _footsize:Int = 50
 	Field _mainsize:Int, _headsize:Int = 100
@@ -51,19 +52,32 @@ Type btGame
 		_MainGrid.TestPos(_tx, _ty, 10, _headsize + 10, _mainsize - 20, _mainsize - 20, MouseX(), MouseY())
 		
 		If MouseHit(MOUSE_LEFT)
-			If _MainGrid.addgrid(_NextGrid[0], _tx - 1, _ty - 1) = 0
-				NextPiece()
-				_score:+_MainGrid.UpdateGrid()
-				_DeadLine = MilliSecs() + _timelimit
-			EndIf
+			_score:+PlacePiece(_tx - 1, _ty - 1)
 		End If
 		
 		If MouseHit(MOUSE_RIGHT) Or MilliSecs() >= _Deadline
-			NextPiece()
+			SkipPiece()
 			_Score:-7
-			_DeadLine = MilliSecs() + _timelimit
 		End If
-
+		
+	End Method
+	
+	Method PlacePiece:Int(x:Int, y:Int)
+		If _MainGrid.addgrid(_NextGrid[0], x, y) = 0
+			NextPiece()
+			_DeadLine = MilliSecs() + _timelimit
+			Return _MainGrid.UpdateGrid()
+		EndIf		
+	End Method
+	
+	Method SkipPiece()
+		NextPiece()
+		_DeadLine = MilliSecs() + _timelimit
+	End Method
+	
+	Method SetOffset(x:Int, y:Int)
+		_xoffset = x
+		_yoffset = y
 	End Method
 	
 	Method NextPiece()
@@ -82,6 +96,7 @@ Type btGame
 	
 	Method Render()
 		SetAlpha(1)
+		SetOrigin(_xoffset, _yoffset)
 		_MainGrid.Render(10, _headsize + 10, _mainsize - 20, _mainsize - 20, _NextGrid[0], _tx - 1, _ty - 1)
 		
 		_NextGrid[0].Render(_mainsize / 5 + 10, 10, _headsize - 10, _headsize - 10)
