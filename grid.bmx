@@ -15,6 +15,7 @@ Type btGrid
 	Field _colEmpty:TColour = TColour.Silver()
 	Field _colFilled:TColour = TColour.Orange()
 	Field _colSelected:TColour = TColour.Lime()
+	Field _colImpossible:TColour = TColour.Red()
 	Field _colLines:TColour = TColour.Black()
 	
 	Rem
@@ -245,13 +246,13 @@ Type btGrid
 	Rem
 	bbdoc: Render the grid
 	EndRem
-	Method Render(x:Int, y:Int, width:Int, height:Int)
+	Method Render(x:Int, y:Int, width:Int, height:Int, superimpose:btGrid = Null, sx:Int = 0, sy:Int = 0)
 		Local blockw:Int = width / GetWidth()
 		Local blockh:Int = height / GetHeight()
 		SetBlend(ALPHABLEND)
 		SetAlpha(1)
 		_colLines.Set()
-		DrawRect(x, y, width, height)
+		DrawRect(x, y, blockw * GetWidth(), blockh * GetHeight())
 		Local vpx:Int, vpy:Int, vpw:Int, vph:Int
 		
 		If (_effects)
@@ -265,9 +266,21 @@ Type btGrid
 						_colEmpty.Set()
 					Case 1
 						_colFilled.Set()
-					Case 2
-						_colSelected.Set()
 				EndSelect
+				
+				If (superimpose)
+					If xx >= sx If yy >= sy If xx - sx <= superimpose.GetWidth() - 1 If yy - sy <= superimpose.GetHeight() - 1
+						
+						If superimpose.GetGrid(xx - sx, yy - sy) = 1
+							If GetGrid(xx, yy) = 1
+								_colImpossible.Set()
+							Else
+								_colSelected.Set()
+							EndIf
+						EndIf
+					EndIf
+				EndIf
+				
 			'   DrawRect(x + xx * blockw + 1, y + yy * blockh + 1, blockw - 2, blockh - 2)
 
 				If (_effects) SetViewport(x + xx * blockw + 1, y + yy * blockh + 1, blockw - 2, blockh - 2)
