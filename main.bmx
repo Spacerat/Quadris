@@ -23,7 +23,7 @@ ini.Save()
 
 Graphics btGame.GetWidthForHeight(GAMEHEIGHT), GAMEHEIGHT
 SetClsColor(255,255,255)
-Local game:btGame = New btGame.Init(GAMEHEIGHT, gwidth, gheight, gtime, gmoves)
+Local game:btGame = New btStandardGame.Init(GAMEHEIGHT, gwidth, gheight, gtime, gmoves)
 
 
 
