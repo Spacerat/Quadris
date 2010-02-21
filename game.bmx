@@ -2,8 +2,9 @@
 SuperStrict
 
 Import "grid.bmx"
+Import "state.bmx"
 
-Type btGame
+Type btGame Extends btState
 
 	Field _MainGrid:btGrid
 	Field _NextGrid:btGrid[3]
