@@ -7,6 +7,7 @@ Import brl.random
 Type btGrid
 	
 	Global _effects:Int = 1
+	Global _fadetime:Float = 20
 	
 	Field _Grid:Int[,]
 	Field _w:Int
@@ -185,11 +186,15 @@ Type btGrid
 	Method EraseRect:Int(x:Int, y:Int, w:Int, h:Int)
 		For Local xx:Int = Max(0, x) Until Min(x + w, _w)
 			For Local yy:Int = Max(0, y) Until Min(y + h, _h)
-				_Grid[xx, yy] = 0
+				EraseBlock(xx, yy)
 			Next
 		Next
 	EndMethod
 
+	Method EraseBlock(x:Int, y:Int)
+		_Grid[x, y] = - _fadetime
+	End Method
+	
 	Rem
 	bbdoc: Fills a grid box
 	returns: 0 if successful
@@ -213,31 +218,37 @@ Type btGrid
 	returns: Score increase.
 	EndRem
 	Method UpdateGrid:Int()
+		
+		Local ret:Int = 0
+	
 		For Local yy:Int = 0 Until _h
+	
 			For Local xx:Int = 0 Until _w
 				
 			If CheckRect(xx, yy, 3, 3) = True
 				EraseRect(xx, yy, 3, 3)
-				Return 30
+				ret:+30
 			EndIf
 				
 			If CheckRect(xx, yy, 3, 2) = True
 				EraseRect(xx, yy, 3, 2)
-				Return 15
+				ret:+15
 			EndIf
 			
 			If CheckRect(xx, yy, 2, 3) = True
 				EraseRect(xx, yy, 2, 3)
-				Return 15
+				ret:+15
 			EndIf
 			
 			If CheckRect(xx, yy, 2, 2) = True
 				EraseRect(xx, yy, 2, 2)
-				Return 5
+				ret:+5
 			EndIf
 			
 			Next
 		Next
+		
+		Return ret
 		
 	EndMethod
 	
@@ -280,12 +291,12 @@ Type btGrid
 		For Local xx:Int = 0 Until GetWidth()
 			For Local yy:Int = 0 Until GetHeight()
 				SetAlpha(1)
-				Select _Grid[xx, yy]
-					Case 0
-						_colEmpty.Set()
-					Case 1
-						_colFilled.Set()
-				EndSelect
+				
+				If _Grid[xx, yy] > 0
+					_colFilled.Set()		
+				Else
+					_colEmpty.Set()
+				EndIf
 				
 				If (superimpose)
 					If xx >= sx If yy >= sy If xx - sx <= superimpose.GetWidth() - 1 If yy - sy <= superimpose.GetHeight() - 1
@@ -301,7 +312,7 @@ Type btGrid
 				EndIf
 				
 			'   DrawRect(x + xx * blockw + 1, y + yy * blockh + 1, blockw - 2, blockh - 2)
-
+				Rem
 				If (_effects)
 
 					SetViewport(x + xx * blockw + 1 + hx, y + yy * blockh + 1 + hy, blockw - 2, blockh - 2)
@@ -312,6 +323,27 @@ Type btGrid
 					TColour.White(0.4).Set()
 					DrawOval(x + xx * blockw - (blockw / 3.0), y + yy * blockh - (blockh / 2.0), blockw * (5.0 / 3.0), blockh)
 				EndIf
+				EndRem
+				RenderBlock(x + xx * blockw, y + yy * blockh, blockw, blockh)
+				
+				If _Grid[xx, yy] < 0
+					_colFilled.Set()
+					SetAlpha((- 1 * GetGrid(xx, yy)) / _fadetime)
+					
+					RenderBlock(x + xx * blockw, y + yy * blockh, blockw, blockh)
+					
+					SetBlend(LIGHTBLEND)
+					'Quadratic equation
+					Local t:Float = GetGrid(xx, yy)
+					Local k:Float = _fadetime
+					Local c:Float = -(((t) * (t + k)) / ((k / 2) ^ 2)) * 100
+					SetColor(c, c, c)
+					DrawRect(x + xx * blockw, y + yy * blockh, blockw, blockh)
+					SetBlend(ALPHABLEND)
+					
+					
+					_Grid[xx, yy]:+1
+				End If
 			Next
 		Next
 		
@@ -320,6 +352,23 @@ Type btGrid
 		EndIf
 
 	End Method
+	
+	Function RenderBlock(x:Float, y:Float, w:Float, h:Float)
+		Local hx:Float, hy:Float				'Handle
+		GetOrigin(hx, hy)
+		
+		If (_effects)
+
+			SetViewport(x + hx + 1, y + hy + 1, w - 2, h - 2)
+		EndIf
+		DrawRect(x + 1, y + 1, w - 2, h - 2)
+		
+		If (_effects)
+			TColour.White(0.4).Set()
+			DrawOval(x - (w / 3.0), y - (h / 2.0), w * (5.0 / 3.0), h)
+		EndIf
+		
+	End Function
 	
 	Method TestPos(resultX:Int Var, resultY:Int Var, x:Float, y:Float, w:Float, h:Float, px:Int, py:Int)
 		Local hx:Float, hy:Float
