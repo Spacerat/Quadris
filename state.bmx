@@ -13,4 +13,16 @@ Type btState
 		
 	End Method
 	
+	Function RunCurrent()
+		If (CurrentState)
+			CurrentState.Run()
+		EndIf
+	End Function
+	
+	Function RenderCurrent()
+		If (CurrentState)
+			CurrentState.Render()
+		EndIf
+	End Function
+	
 EndType
