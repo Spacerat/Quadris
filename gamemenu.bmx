@@ -15,12 +15,14 @@ Type btMenuState Extends btState
 	Field _Font:TImageFont
 	Method Init:btMenuState()
 	
+		Local scale:Float = btSettings.Height / 500.0
 		
 		_Menu = New btMenu
 		_Menu.Initialise(GameMenuCallback, Self)
-		_Menu.SetPosition(40, 40)
+		_Menu.SetPosition(30 * scale, 40 * scale)
+		_Menu.SetSpacing(20 * scale)
 		_Menu.AddItem("Single-player Standard")
-		_Menu.AddItem("Single-player Arcade")
+		_Menu.AddItem("Single-player Custom")
 		_Menu.AddItem("Hotseat")
 		_Menu.AddItem("Settings")
 		_Menu.AddItem("Exit")
@@ -28,7 +30,8 @@ Type btMenuState Extends btState
 		_Settings = New btMenu
 		_Settings.SetCallback(GameMenuCallback)
 		_Settings.SetContext(Self)
-		_Settings.SetPosition(40, 40)
+		_Settings.SetPosition(30 * scale, 40 * scale)
+		_Settings.SetSpacing(20.0 * scale)
 		
 		If btSettings.Glass
 			_Settings.AddItem("Glass: On")
@@ -39,10 +42,16 @@ Type btMenuState Extends btState
 		_Settings.AddItem("Pieces: " + btSettings.Moves)
 		_Settings.AddItem("Grid width: " + btSettings.GameWidth)
 		_Settings.AddItem("Grid height: " + btSettings.GameHeight)
+		If btSettings.Seed = 0
+			_Settings.AddItem("Random Seed: Random")
+		Else
+			_Settings.AddItem("Random Seed: " + btSettings.Seed)
+		EndIf
+		_Settings.AddItem("")
 		_Settings.AddItem("Return to main menu")
 		
 		
-		_Font = LoadImageFont("incbin::ARLRDBD.TTF", 22)
+		_Font = LoadImageFont("incbin::ARLRDBD.TTF", Int(22 * scale))
 		
 		Return Self
 	End Method
@@ -63,10 +72,10 @@ Type btMenuState Extends btState
 			If Button = MOUSE_LEFT
 				Select index
 					Case 0
-						CurrentState = New btStandardGame.Init(btSettings.Height, btSettings.GameWidth, btSettings.GameHeight, btSettings.Movetime, btSettings.Moves)
+						CurrentState = New btStandardGame.Init(btSettings.Height)
 						Leave()
 					Case 1
-						CurrentState = New btStandardGame.Init(btSettings.Height, btSettings.GameWidth, btSettings.GameHeight, btSettings.Movetime, - 1)
+						CurrentState = New btStandardGame.Init(btSettings.Height, btSettings.GameWidth, btSettings.GameHeight, btSettings.Movetime, btSettings.Moves, btSettings.seed)
 						Leave()
 					Case 2	
 						Leave()
@@ -122,6 +131,18 @@ Type btMenuState Extends btState
 					End If
 					_Settings.ChangeItem(4, "Grid height: " + Int(btSettings.GameHeight))
 				Case 5
+					Local seed:Int
+					If Button = MOUSE_LEFT
+						seed = btSettings.SetSeed(btSettings.Seed + 1)
+					ElseIf Button = MOUSE_RIGHT
+						seed = btSettings.SetSeed(Max(btSettings.Seed - 1, 0))
+					End If
+					If seed = 0
+						_Settings.ChangeItem(5, "Random Seed: Random")
+					Else
+						_Settings.ChangeItem(5, "Random Seed: " + btSettings.Seed)
+					EndIf
+				Case 7
 					If Button = MOUSE_LEFT
 						_Settings.Disable()
 						_Menu.Enable()
