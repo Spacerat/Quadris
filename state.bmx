@@ -1,5 +1,9 @@
 
+SuperStrict
+
 Type btState
+
+	Global CurrentState:btState
 
 	Method Run()
 		
