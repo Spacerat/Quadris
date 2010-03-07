@@ -6,14 +6,14 @@ Type btSettings
 
 	Global Height:Int
 	Global Glass:Int
-	Global FadeTime:Int
+	Global FadeTime:Float
 	Global GameWidth:Int
 	Global GameHeight:Int
 	Global Movetime:Int
 	Global Moves:Int
-
+	Global ini:TPertIni
 	Function Load()
-		Local ini:TPertIni = TPertIni.Create("config.ini")
+		ini = TPertIni.Create("config.ini")
 		ini.Load()
 		
 		Height = Int(IniLoadDef(ini, "Display", "Height", "500"))
@@ -23,12 +23,48 @@ Type btSettings
 		GameHeight = Int(IniLoadDef(ini, "Game", "Height", "5"))
 		Movetime = Int(IniLoadDef(ini, "Game", "Time limit", "25000"))
 		Moves = Int(IniLoadDef(ini, "Game", "Moves", "35"))
-		
-		
-		
+	
 		ini.Save()
 	End Function
 
+	Function ToggleGlass:Int()
+		Glass = 1 - Glass
+		ini.SetSectionValue("Display", "Glass", Glass)
+		ini.Save(True)
+		Return Glass
+	End Function
+	
+	Function SetFadeTime:Int(msecs:Int)
+		FadeTime = Max(msecs, 0)
+		ini.SetSectionValue("Display", "FadeDuration", FadeTime)
+		ini.Save(True)
+		Return FadeTime
+	End Function
+	
+	Function SetMoves:Int(n:Int)
+		
+		If n = 0 n = 3
+		If n < 3 n = -1
+		
+		Moves = n
+		ini.SetSectionValue("Game", "Moves", Moves)
+		ini.Save(True)
+		Return Moves
+	End Function
+	
+	Function SetGameWidth:Int(x:Int)
+		GameWidth = Max(x, 3)
+		ini.SetSectionValue("Game", "Width", GameWidth)
+		ini.Save(True)
+		Return GameWidth
+	End Function
+
+	Function SetGameHeight:Int(y:Int)
+		GameHeight = Max(y, 3)
+		ini.SetSectionValue("Game", "Width", GameHeight)
+		ini.Save(True)
+		Return GameHeight
+	End Function		
 EndType
 
 
