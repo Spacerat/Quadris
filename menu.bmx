@@ -12,7 +12,7 @@ Type btMenu
 	Field _context:Object
 	Field _Callback:Int(index:Int, Text:String, Button:Int, Menu:btMenu, data:Object)
 	Field _HoverItem:Int = -1
-	Field _Spacing:Int = 40
+	Field _Spacing:Int = 20
 	Field _Enabled:Int = False
 	Method Initialise(func:Int(index:Int, Text:String, Button:Int, Menu:btMenu, data:Object), context:Object = Null)
 		Enable()
