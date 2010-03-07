@@ -11,7 +11,9 @@ Type btSettings
 	Global GameHeight:Int
 	Global Movetime:Int
 	Global Moves:Int
+	Global Seed:Int
 	Global ini:TPertIni
+	
 	Function Load()
 		ini = TPertIni.Create("config.ini")
 		ini.Load()
@@ -23,7 +25,7 @@ Type btSettings
 		GameHeight = Int(IniLoadDef(ini, "Game", "Height", "5"))
 		Movetime = Int(IniLoadDef(ini, "Game", "Time limit", "25000"))
 		Moves = Int(IniLoadDef(ini, "Game", "Moves", "35"))
-	
+		Seed = 0
 		ini.Save()
 	End Function
 
@@ -64,7 +66,12 @@ Type btSettings
 		ini.SetSectionValue("Game", "Width", GameHeight)
 		ini.Save(True)
 		Return GameHeight
-	End Function		
+	End Function
+	
+	Function SetSeed:Int(n:Int)
+		Seed = n
+		Return Seed
+	End Function
 EndType
 
 
