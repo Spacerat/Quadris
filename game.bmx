@@ -18,10 +18,12 @@ Type btGame Extends btState
 	Field _deadline:Int = MilliSecs() + _timelimit
 	Field _turnsleft:Int = -1
 	Field _movecounter:Int = 0
+	Field _Font:TImageFont
 
 	Method Init:btGame(ScreenHeight:Int, w:Int = 5, h:Int = 5, timelimit:Int = 25000, _turns:Int = 35, seed:Int = 0)
 		FlushKeys()
 		FlushMouse()
+		_Font = LoadImageFont("incbin::ARLRDBD.TTF", 22)
 		_MainGrid = New btGrid.Init(w, h)
 		If seed = 0 SeedRnd(MilliSecs()) Else SeedRnd(seed)
 		For Local k:Int = 0 Until _NextGrid.Dimensions()[0]
@@ -99,6 +101,7 @@ Type btGame Extends btState
 	Method Render()
 		SetAlpha(1)
 		SetScale(1, 1)
+		SetImageFont(_Font)
 		SetOrigin(_xoffset, _yoffset)
 		_MainGrid.Render(10, _headsize + 10, _mainsize - 20, _mainsize - 20, _NextGrid[0], _tx - 1, _ty - 1)
 		
