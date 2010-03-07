@@ -17,10 +17,13 @@ Type btGame Extends btState
 	Field _timelimit:Int = 25000
 	Field _deadline:Int = MilliSecs() + _timelimit
 	Field _turnsleft:Int = -1
+	Field _movecounter:Int = 0
 
-	Method Init:btGame(ScreenHeight:Int, w:Int = 5, h:Int = 5, timelimit:Int = 25000, _turns:Int = 35)
+	Method Init:btGame(ScreenHeight:Int, w:Int = 5, h:Int = 5, timelimit:Int = 25000, _turns:Int = 35, seed:Int = 0)
+		FlushKeys()
+		FlushMouse()
 		_MainGrid = New btGrid.Init(w, h)
-		SeedRnd(MilliSecs())
+		If seed = 0 SeedRnd(MilliSecs()) Else SeedRnd(seed)
 		For Local k:Int = 0 Until _NextGrid.Dimensions()[0]
 			_NextGrid[k] = New btGrid.Init3by3Piece()
 		Next
@@ -48,13 +51,16 @@ Type btGame Extends btState
 	End Function
 	
 	Method Run()
-		
+		If KeyHit(KEY_ESCAPE)
+			CurrentState = Null
+		End If
 	End Method
 	
 	Method PlacePiece:Int(x:Int, y:Int)
-		If GetRemainingMoves() = 0 Return - 1
+		If GetRemainingMoves() = 0 Return - 2
 		If _MainGrid.addgrid(_NextGrid[0], x, y) = 0
 			NextPiece()
+			_movecounter:+1
 			_DeadLine = MilliSecs() + _timelimit
 			Return _MainGrid.UpdateGrid()
 		Else
@@ -77,7 +83,7 @@ Type btGame Extends btState
 			_NextGrid[n] = _NextGrid[n + 1]				
 		Next
 		
-		If _turnsleft > _NextGrid.Dimensions()[0]
+		If _turnsleft > _NextGrid.Dimensions()[0] Or _turnsleft < 0
 			_NextGrid[_NextGrid.Dimensions()[0] - 1] = New btGrid.Init3by3Piece()
 			_turnsleft:-1
 		Else
@@ -92,6 +98,7 @@ Type btGame Extends btState
 	
 	Method Render()
 		SetAlpha(1)
+		SetScale(1, 1)
 		SetOrigin(_xoffset, _yoffset)
 		_MainGrid.Render(10, _headsize + 10, _mainsize - 20, _mainsize - 20, _NextGrid[0], _tx - 1, _ty - 1)
 		
@@ -120,14 +127,25 @@ Type btStandardGame Extends btGame
 		Super.Render()
 		SetColor(0, 0, 0)
 		DrawText("Score: " + _Score, 10, _h - _footsize)
-		If _turnsleft >= 0 DrawText("Moves: " + GetRemainingMoves(), 10, _h - _footsize + 20)
+		If _turnsleft >= 0
+			DrawText("Moves: " + GetRemainingMoves(), 10, _h - _footsize + 20)
+		Else
+			DrawText("Moves: " + _movecounter, 10, _h - _footsize + 20)
+		EndIf
 	End Method
 	
 	Method Run()
+		Super.Run()
 		_MainGrid.TestPos(_tx, _ty, 10, _headsize + 10, _mainsize - 20, _mainsize - 20, MouseX(), MouseY())
 		
 		If MouseHit(MOUSE_LEFT)
-			_score:+Max(PlacePiece(_tx - 1, _ty - 1), 0)
+			Local score:Int = PlacePiece(_tx - 1, _ty - 1)
+			If score > 0
+				_score:+score	
+			ElseIf score = -2
+				CurrentState = Null
+			End If
+			
 		End If
 		
 		If (MouseHit(MOUSE_RIGHT) Or MilliSecs() >= _Deadline) And GetRemainingMoves() <> 0
@@ -142,7 +160,7 @@ Type btHotseatGame Extends btGame
 	Field _Player:Int = 0
 
 	Method Run()
-	
+		Super.Run()
 		_MainGrid.TestPos(_tx, _ty, 10, _headsize + 10, _mainsize - 20, _mainsize - 20, MouseX(), MouseY())
 		
 		If MouseHit(MOUSE_LEFT)
@@ -150,7 +168,9 @@ Type btHotseatGame Extends btGame
 			If score >= 0
 				_score[_player]:+score
 				_Player = 1 - _Player
-			End If
+			ElseIf score = -2
+				CurrentState = Null
+			EndIf
 		End If
 		
 		If MouseHit(MOUSE_RIGHT) Or MilliSecs() >= _Deadline And GetRemainingMoves() <> 0

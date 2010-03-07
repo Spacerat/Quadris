@@ -3,11 +3,9 @@ SuperStrict
 
 Import joe.colour
 Import brl.random
+Import "settings.bmx"
 
 Type btGrid
-	
-	Global _effects:Int = 1
-	Global _fadetime:Float = 20
 	
 	Field _Grid:Int[,]
 	Field _w:Int
@@ -192,7 +190,7 @@ Type btGrid
 	EndMethod
 
 	Method EraseBlock(x:Int, y:Int)
-		_Grid[x, y] = - _fadetime
+		_Grid[x, y] = - btSettings.FadeTime
 	End Method
 	
 	Rem
@@ -285,7 +283,7 @@ Type btGrid
 		DrawRect(x, y, blockw * GetWidth(), blockh * GetHeight())
 
 		GetOrigin(hx, hy)
-		If (_effects)
+		If (btSettings.Glass)
 			GetViewport(vpx, vpy, vpw, vph)
 		EndIf
 		For Local xx:Int = 0 Until GetWidth()
@@ -328,14 +326,14 @@ Type btGrid
 				
 				If _Grid[xx, yy] < 0
 					_colFilled.Set()
-					SetAlpha((- 1 * GetGrid(xx, yy)) / _fadetime)
+					SetAlpha((- 1 * GetGrid(xx, yy)) / btSettings.FadeTime)
 					
 					RenderBlock(x + xx * blockw, y + yy * blockh, blockw, blockh)
 					
 					SetBlend(LIGHTBLEND)
 					'Quadratic equation
 					Local t:Float = GetGrid(xx, yy)
-					Local k:Float = _fadetime
+					Local k:Float = btSettings.FadeTime
 					Local c:Float = -(((t) * (t + k)) / ((k / 2) ^ 2)) * 100
 					SetColor(c, c, c)
 					DrawRect(x + xx * blockw, y + yy * blockh, blockw, blockh)
@@ -347,7 +345,7 @@ Type btGrid
 			Next
 		Next
 		
-		If (_effects)
+		If (btSettings.Glass)
 			SetViewport(vpx, vpy, vpw, vph)
 		EndIf
 
@@ -357,13 +355,13 @@ Type btGrid
 		Local hx:Float, hy:Float				'Handle
 		GetOrigin(hx, hy)
 		
-		If (_effects)
+		If (btSettings.Glass)
 
 			SetViewport(x + hx + 1, y + hy + 1, w - 2, h - 2)
 		EndIf
 		DrawRect(x + 1, y + 1, w - 2, h - 2)
 		
-		If (_effects)
+		If (btSettings.Glass)
 			TColour.White(0.4).Set()
 			DrawOval(x - (w / 3.0), y - (h / 2.0), w * (5.0 / 3.0), h)
 		EndIf

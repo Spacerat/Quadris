@@ -14,10 +14,6 @@ AppTitle = "Bitris"
 
 btSettings.Load()
 
-btGrid._effects = btSettings.Glass
-btGrid._fadetime = btSettings.FadeTime
-
-
 Graphics btGame.GetWidthForHeight(btSettings.Height), btSettings.Height
 
 SetClsColor(255, 255, 255)
@@ -25,13 +21,12 @@ SetClsColor(255, 255, 255)
 btState.CurrentState = New btMenuState.Init()
 
 
-While Not AppTerminate()
+While (Not AppTerminate())
+	btState.RunCurrent()
 	Cls
-
-	btState.CurrentState.Run()
-	btState.CurrentState.Render()
-	
+	btState.RenderCurrent()
 	Flip
+	If btState.CurrentState = Null btState.CurrentState = New btMenuState.Init()
 Wend
 
 
