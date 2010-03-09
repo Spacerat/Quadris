@@ -10,7 +10,7 @@ Import "settings.bmx"
 
 Incbin "ARLRDBD.TTF"
 
-AppTitle = "Bitris"
+AppTitle = "Quadris"
 
 btSettings.Load()
 
