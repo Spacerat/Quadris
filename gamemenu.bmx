@@ -42,6 +42,11 @@ Type btMenuState Extends btState
 		_Settings.AddItem("Pieces: " + btSettings.Moves)
 		_Settings.AddItem("Grid width: " + btSettings.GameWidth)
 		_Settings.AddItem("Grid height: " + btSettings.GameHeight)
+		If btSettings.Skips = -1
+			_Settings.AddItem("Skips: Infinate")
+		Else
+			_Settings.AddItem("Skips: " + btSettings.Skips)
+		EndIf
 		If btSettings.Seed = 0
 			_Settings.AddItem("Random Seed: Random")
 		Else
@@ -75,13 +80,12 @@ Type btMenuState Extends btState
 						CurrentState = New btStandardGame.Init(btSettings.Height)
 						Leave()
 					Case 1
-						CurrentState = New btStandardGame.Init(btSettings.Height, btSettings.GameWidth, btSettings.GameHeight, btSettings.Movetime, btSettings.Moves, btSettings.seed)
+						CurrentState = New btStandardGame.Init(btSettings.Height, btSettings.GameWidth, btSettings.GameHeight, btSettings.Movetime, btSettings.Moves, btSettings.Skips, btSettings.seed)
 						Leave()
 					Case 2	
 						Leave()
 						'DebugStop
-						CurrentState = New btHotseatGame.Init(btSettings.Height, btSettings.GameWidth, btSettings.GameHeight, btSettings.Movetime, - 1)
-						
+						CurrentState = New btHotseatGame.Init(btSettings.Height, btSettings.GameWidth, btSettings.GameHeight, btSettings.Movetime, - 1, btSettings.Skips, 0)
 					Case 3
 						_Menu.Disable()
 						_Settings.Enable()
@@ -131,6 +135,17 @@ Type btMenuState Extends btState
 					End If
 					_Settings.ChangeItem(4, "Grid height: " + Int(btSettings.GameHeight))
 				Case 5
+					If Button = MOUSE_LEFT
+						btSettings.SetSkips(btSettings.Skips + 1)
+					ElseIf Button = MOUSE_RIGHT
+						btSettings.SetSkips(btSettings.Skips - 1)
+					End If
+					If btSettings.Skips = -1
+						_Settings.ChangeItem(5, "Skips: Infinate")
+					Else
+						_Settings.ChangeItem(5, "Skips: " + btSettings.Skips)
+					EndIf					
+				Case 6
 					Local seed:Int
 					If Button = MOUSE_LEFT
 						seed = btSettings.SetSeed(btSettings.Seed + 1)
@@ -138,11 +153,11 @@ Type btMenuState Extends btState
 						seed = btSettings.SetSeed(Max(btSettings.Seed - 1, 0))
 					End If
 					If seed = 0
-						_Settings.ChangeItem(5, "Random Seed: Random")
+						_Settings.ChangeItem(6, "Random Seed: Random")
 					Else
-						_Settings.ChangeItem(5, "Random Seed: " + btSettings.Seed)
+						_Settings.ChangeItem(6, "Random Seed: " + btSettings.Seed)
 					EndIf
-				Case 7
+				Case 8
 					If Button = MOUSE_LEFT
 						_Settings.Disable()
 						_Menu.Enable()

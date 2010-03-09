@@ -19,8 +19,8 @@ Type btGame Extends btState
 	Field _turnsleft:Int = -1
 	Field _movecounter:Int = 0
 	Field _Font:TImageFont
-
-	Method Init:btGame(ScreenHeight:Int, w:Int = 5, h:Int = 5, timelimit:Int = 25000, _turns:Int = 35, seed:Int = 0)
+	
+	Method Init:btGame(ScreenHeight:Int, w:Int = 5, h:Int = 5, timelimit:Int = 25000, _turns:Int = 35, _skips:Int = -1, seed:Int = 0)
 		FlushKeys()
 		FlushMouse()
 		_Font = LoadImageFont("incbin::ARLRDBD.TTF", 22)
