@@ -12,6 +12,7 @@ Type btSettings
 	Global Movetime:Int
 	Global Moves:Int
 	Global Seed:Int
+	Global Skips:Int
 	Global ini:TPertIni
 	
 	Function Load()
@@ -25,6 +26,7 @@ Type btSettings
 		GameHeight = Int(IniLoadDef(ini, "Game", "Height", "5"))
 		Movetime = Int(IniLoadDef(ini, "Game", "Time limit", "25000"))
 		Moves = Int(IniLoadDef(ini, "Game", "Moves", "35"))
+		Skips = Int(IniLoadDef(ini, "Game", "Skips", "-1"))
 		Seed = 0
 		ini.Save()
 	End Function
@@ -71,6 +73,13 @@ Type btSettings
 	Function SetSeed:Int(n:Int)
 		Seed = n
 		Return Seed
+	End Function
+	
+	Function SetSkips:Int(n:Int)
+		Skips = Max(n, - 1)
+		ini.SetSectionValue("Game", "Skips", Skips)
+		ini.Save(True)
+		Return Skips
 	End Function
 EndType
 
