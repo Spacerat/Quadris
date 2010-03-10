@@ -26,7 +26,7 @@ Type btSettings
 		GameHeight = Int(IniLoadDef(ini, "Game", "Height", "5"))
 		Movetime = Int(IniLoadDef(ini, "Game", "Time limit", "25000"))
 		Moves = Int(IniLoadDef(ini, "Game", "Moves", "35"))
-		Skips = Int(IniLoadDef(ini, "Game", "Skips", "-1"))
+		Skips = Int(IniLoadDef(ini, "Game", "Skips", "3"))
 		Seed = 0
 		ini.Save()
 	End Function
