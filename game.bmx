@@ -4,7 +4,7 @@ SuperStrict
 Import "grid.bmx"
 Import "state.bmx"
 Import "settings.bmx"
-Import "drawcentredtext.bmx"
+Import joe.advtext
 
 Type btGame Extends btState
 

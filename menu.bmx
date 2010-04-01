@@ -4,6 +4,7 @@ SuperStrict
 Import brl.max2d
 Import brl.linkedlist
 Import brl.hook
+Import joe.advtext
 
 Type btMenu
 
@@ -43,14 +44,7 @@ Type btMenu
 		Local n:Int = 0
 		SetBlend(ALPHABLEND)
 		For Local i:btMenuItem = EachIn _Items
-			If _HoverItem = n
-		'		SetColor(60, 60, 60)
-				SetAlpha(0.2)
-				DrawText(i.GetText(), _x + 3, yy + 3)
-			EndIf
-			SetAlpha(1)
-		'	SetColor(0, 0, 0)
-			DrawText(i.GetText(), _x, yy)
+			DrawTextShadow(i.GetText(), _x, yy, 3, 3, (_HoverItem = n))
 			yy:+spacing
 			n:+1
 		Next
