@@ -36,9 +36,7 @@ Type btGame Extends btState
 		_MainGrid = New btGrid.Init(w, h)
 		If seed = 0 SeedRnd(MilliSecs()) Else SeedRnd(seed)
 		
-		For Local k:Int = 0 Until _NextGrid.Dimensions()[0]
-			_NextGrid[k] = New btGrid.Init3by3Piece()
-		Next
+		InitPieces()
 		
 		SetTitle(title)
 		InitPlayers(players)
@@ -47,6 +45,12 @@ Type btGame Extends btState
 		SetTimeLimit(btSettings.Movetime)
 		SetTurnsLimit(btSettings.Moves)
 		Return Self
+	End Method
+	
+	Method InitPieces()
+		For Local k:Int = 0 Until _NextGrid.Dimensions()[0]
+			_NextGrid[k] = New btGrid.Init3by3Piece()
+		Next		
 	End Method
 	
 	Method SetTitle(t:String)
@@ -234,6 +238,28 @@ Type btStandardGame Extends btGame
 			DrawTextCentred(_Title + " Score of " + _Score[0], _w / 2, _h / 2 + 30)
 			DrawTextCentred("Click to continue.", _w / 2, _h / 2 + 60)
 		End If		
+	End Method
+	
+	Method InitPieces()
+		'Create a set of all possible pieces in order
+		Local l:Int = btGrid.GetPieceArray().Dimensions()[0]
+
+		_NextGrid = New btGrid[l]
+		
+		For Local i:Int = 0 Until l
+			_NextGrid[i] = New btGrid.Init3by3Piece(i)
+		Next
+		
+		'Shuffle the set
+		Local n:Int = l
+		While n > 1
+			Local k:Int = Rand(0, n - 1)
+			n:-1
+			Local tmp:btGrid = _NextGrid[k]
+			_NextGrid[k] = _NextGrid[n]
+			_NextGrid[n] = tmp
+		WEnd
+				
 	End Method
 	
 End Type
