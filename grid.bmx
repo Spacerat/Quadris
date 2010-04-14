@@ -31,9 +31,22 @@ Type btGrid
 		Return Self
 	End Method
 	
-	Method Init3by3Piece:btGrid()
+	Method Init3by3Piece:btGrid(piece:Int = -1)
 		Init(3, 3)
+		Local b:Int[][][] = GetPieceArray()
+		If (piece = -1) piece = Rand(0, b.dimensions()[0] - 1)
+
+		For Local xx:Int = 0 To 2
+			For Local yy:Int = 0 To 2
+				_Grid[xx, yy] = b[piece][yy][xx]
+			Next
+		Next
 		
+		Return Self
+	EndMethod
+		
+	Function GetPieceArray:Int[][][] ()
+	
 		Local b:Int[][][]
 		b = [[ ..			'Three pronged pieces
 		[0, 1, 0],  ..
@@ -142,19 +155,42 @@ Type btGrid
 ..
 		[0, 1, 0],  ..		'+
 		[1, 1, 1],  ..
-		[0, 1, 0] ] ]
+		[0, 1, 0] ], [ ..
+..
+		[1, 0, 0],  ..		'\ long
+		[0, 1, 0],  ..
+		[0, 0, 1] ], [ ..
+..
+		[0, 0, 1],  ..		'/ long
+		[0, 1, 0],  ..
+		[1, 0, 0] ], [ ..
+..
+		[0, 0, 1],  ..		'/ short
+		[0, 1, 0],  ..
+		[0, 0, 0] ], [ ..
+..
+		[1, 0, 0],  ..		'\ short
+		[0, 1, 0],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 0, 0],  ..		'n
+		[1, 1, 1],  ..
+		[1, 0, 1] ], [ ..
+..
+		[1, 0, 1],  ..		'u
+		[1, 1, 1],  ..
+		[0, 0, 0] ], [ ..
+..
+		[0, 1, 1],  ..		'<
+		[0, 1, 0],  ..
+		[0, 1, 1] ], [ ..
+..
+		[1, 1, 0],  ..		'>
+		[0, 1, 0],  ..
+		[1, 1, 0] ] ]
 
-
-		Local piece:Int = Rand(0, b.dimensions()[0] - 1)
-
-		For Local xx:Int = 0 To 2
-			For Local yy:Int = 0 To 2
-				_Grid[xx, yy] = b[piece][yy][xx]
-			Next
-		Next
-		
-		Return Self
-	End Method
+		Return b
+	End Function
 	
 	
 	Rem
